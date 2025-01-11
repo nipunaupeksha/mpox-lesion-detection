@@ -74,3 +74,5 @@ target/
 ./data/*
 **/*.jpg
 **/*.png
+./data/
+data/
