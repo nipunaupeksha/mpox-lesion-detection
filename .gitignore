@@ -76,3 +76,11 @@ target/
 **/*.png
 ./data/
 data/
+
+# Hyperparameter tuning
+hyperparameter_tuning
+hyperparameter_tuning/
+./hyperparameter_tuning
+./hyperparameter_tuning/
+./hyperparameter_tuning/*
+./hyperparameter_tuning/**/*
