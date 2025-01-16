@@ -84,3 +84,11 @@ hyperparameter_tuning/
 ./hyperparameter_tuning/
 ./hyperparameter_tuning/*
 ./hyperparameter_tuning/**/*
+
+# Models
+models
+models/
+./models
+./models/
+./models/*
+./models/**/*
