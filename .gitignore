@@ -92,3 +92,11 @@ models/
 ./models/
 ./models/*
 ./models/**/*
+
+# Results
+results
+results/
+./results
+./results/
+./results/*
+./results/**/*
