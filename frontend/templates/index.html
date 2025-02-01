@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--=============== CSS ===============-->
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='styles.css')}}" />
+    <!--=============== FAVICON ===============-->
+    <link
+      rel="shortcut icon"
+      href="{{url_for('static', filename='favicon.png')}}"
+      type="image/x-icon" />
+    <!--=============== BOXICONS ===============-->
+    <link
+      href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+      rel="stylesheet" />
+    <title>PoxCheck</title>
+  </head>
+  <body>
+    <!--=============== HEADER ===============-->
+    <header class="header" id="header">
+      <nav class="nav container">
+        <a href="#" class="nav__logo"> PoxCheck <i class="bx bx-leaf"></i> </a>
+        <div class="nav__menu" id="nav-menu">
+          <ul class="nav__list">
+            <li class="nav__item">
+              <a href="#home" class="nav__link active-link">
+                <span>Home</span>
+              </a>
+            </li>
+            {% if filename %} 
+            <li class="nav__item">
+              <a href="#results" class="nav__link">
+                <span>Results</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="nav__item">
+              <a href="#footer" class="nav__link">
+                <span>About</span>
+              </a>
+            </li>
+          </ul>
+          <div class="nav__close" id="nav-close">
+            <i class="bx bx-x"></i>
+        </div>
+        </div>
+        <div class="nav__btns">
+          <!-- Theme change button -->
+          <i class="bx bx-moon" id="theme-button"></i>
+          <div class="nav__toggle" id="nav-toggle">
+              <i class="bx bx-menu"></i>
+          </div>
+        </nav>
+    </header>
+    <!--=============== HEADER ===============-->
+    <main class="main">
+      <!--==================== HOME ====================-->
+      <section class="home section" id="home">
+        <div class="home__container container grid">
+          <div class="home__data">
+            <h1 class="home__title">FinFacts</h1>
+            <p class="home__description">
+                <span style="color:var(--first-color); font-weight: var(--font-semi-bold);">FinFacts</span> can identify most common reef-associated fish species in coastal areas of <span style="color:var(--first-color); font-weight: var(--font-semi-bold);">Sri Lanka</span><br> 
+                <span class="text first__text">The system uses <span><span class="text second__text">MobileNetV2</span> 
+            </p>
+            <form action="/" method="post" enctype="multipart/form-data">
+              <div class="home__input-wrapper">
+                <label for="file" class="home__input">Select Image</label>
+                <input name="file" type="file" id ="file" autocomplete="off" required class="home__input" style="display:none;">
+                <button type="submit" class="button button--flex">Submit <i class='bx bxs-chevrons-right'></i></button>
+              </div>
+            </form>
+            <div style="width: 100%; margin-top:var(--mb-1);">
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <ul>
+                {% for message in messages %}
+                <li style="color: #8e0a0a;">{{message}}</li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+          <div class="home__img">
+            {% if filename %} 
+            <img src="{{ url_for('views.display_image', filename=filename)}}">
+            {% else %}
+            <img src="{{url_for('static', filename='default_home.png')}}">
+            {% endif %}
+          </div>
+        </div>
+      </section>
+      <!--==================== RESULTS ====================-->
+      {% if filename %} 
+      <section class="results section container" id="results">
+        <div class="results__container grid">
+          <img src="{{ url_for('views.display_gradcam', filename=filename)}}">
+          <div class="results__data">
+            <p class="results__description">
+              Prediction
+            </p>
+            <h2 class="section__title results__title">
+                {{predicted_fish}}
+            </h2>
+            <p class="results__description" style="font-weight:var(--font-semi-bold);">
+              <em>{{fish_data[1]}}</em>
+            </p>
+            <p class="results__description">
+            {{fish_data[2]}}
+            </p>
+            <p class="results__description">
+              Threat to humans: {% if 'Danger' in fish_data[4] %} <span style="color: #8e0a0a; font-weight: var(--font-semi-bold);">{{fish_data[4]}}</span> {% else %} <span style="color: #046f04; font-weight: var(--font-semi-bold);">{{fish_data[4]}}</span> {% endif %}
+            </p>
+          </div>
+        </div>
+        <div class="location__container">
+          <h2 class="section__title results__title">Find Other Fish in the Area</h2>
+          <div class="select__wrapper">
+            <select id="location" class="location__select">
+              {% set count = namespace(value=1) %}
+              {% for val in fish_locations %}
+              <option value={{count.value}}>{{val}}</option>
+              {% set count.value = count.value + 1 %}
+              {% endfor %}
+            </select>
+          </div>
+          <div class="fish__container grid">
+            {% for key in location_fish %}
+              {% for fish in location_fish[key] %}
+                {% if key in fish_locations[0] %}
+                <div class="fish__card location_1">
+                  <img src="{{url_for('static',filename=fish[1])}}" class="fish__card-img">
+                  <h3 class="fish__card-name">{{fish[0]}}</h3>
+                </div>
+                {% endif %}
+                {% if key in fish_locations[1] %}
+                <div class="fish__card location_2 hide">
+                  <img src="{{url_for('static',filename=fish[1])}}" class="fish__card-img">
+                  <h3 class="fish__card-name">{{fish[0]}}</h3>
+                </div>
+                {% endif %}
+                {% if key in fish_locations[2] %}
+                <div class="fish__card location_3 hide">
+                  <img src="{{url_for('static',filename=fish[1])}}" class="fish__card-img">
+                  <h3 class="fish__card-name">{{fish[0]}}</h3>
+                </div>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="net__bg">
+          <p style="color:#FFF; font-size: var(--h3-font-size); width: 100%; text-align: center;">Model Accuracies</p>
+          <div class="net__container grid">
+            {% for key in predictions %}
+            <div class="net__card">
+              <div class="net__card-net">{{key.upper()}}</div>
+              <h3 class="net__card-prediction">{{predictions[key]}}</h3>
+              <p class="net__card-accuracy">{% if values[key]> 100 %} 100 {% else %} {{values[key]}} {% endif %}%</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+    </main>
+    <footer class="footer section" id="footer">
+      <div class="footer__container container grid">
+        <div class="footer__content">
+          <a href="#" class="footer__logo">
+            FinFacts <i class="bx bx-leaf footer__logo-icon"></i>
+          </a>
+          <h3 class="footer__title">
+            Fish Image Classification System
+          </h3>
+          <ul class="footer__data grid">
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> MobileNetV2</li>
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> Resnet50V2</li>
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> VGG-16</li>
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> VGG-19</li>
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> Xception</li>
+            <li class="footer__information"><i class='bx bxs-check-circle'></i> InceptionResnetV2</li>
+        </ul>
+        </div>
+        <div class="footer__content">
+          <h3 class="footer__title">Designed By,</h3>
+          <ul class="footer__data">
+            <li class="footer__information">Sohani Wewelwala</li>
+          </ul>
+        </div>
+        <div class="footer__content">
+          <h3 class="footer__title">Contact</h3>
+          <ul class="footer__data">
+          <div class="footer__social">
+            <a href="https://www.gmail.com" class="footer__social-link">
+              <i class="bx bx-envelope"></i>
+            </a>
+            <a href="https://www.github.com" class="footer__social-link">
+              <i class="bx bxl-github"></i>
+            </a>
+            <a href="https://www.instagram.com" class="footer__social-link">
+              <i class="bx bxl-instagram"></i>
+            </a>
+          </div>
+          </ul>
+        </div>
+       </div>
+       <p class="footer__copy">&#169; Sohani Wewelwala 2022. All rights reserverd.</p>
+    </footer>
+
+    <!--=============== JS ===============-->
+    <script
+      type="text/javascript"
+      src="{{url_for('static', filename='jquery-3.6.3.min.js')}}"></script>
+    <script
+      type="text/javascript"
+      src="{{url_for('static', filename='main.js')}}"></script>
+  </body>
+</html>
