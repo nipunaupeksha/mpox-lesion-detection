@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for 
 from werkzeug.utils import secure_filename
-from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, most_common, CNN_MODELS, RNN_MODELS, GNN_MODELS
+from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, most_common,load_preprocess_input_methods, CNN_MODELS, RNN_MODELS, GNN_MODELS
 import os
 import tensorflow as tf
-import matplotlib.pyplot as plt
+from tensorflow.keras.preprocessing.image import img_to_array
 import numpy as np
 import cv2
 import pandas as pd
@@ -23,6 +23,11 @@ cnn_models = load_models(CNN_MODELS)
 rnn_models = load_models(RNN_MODELS)
 gnn_models = load_models(GNN_MODELS)
 
+# load preprocess input
+cnn_preprocess_input = load_preprocess_input_methods('cnn')
+
+# print models
+print("CNN Models: ", cnn_models)
 
 # load derma data
 df = pd.read_csv(os.path.join(os.path.abspath(os.path.dirname(__file__)), './static/derma_dataset.csv'))
@@ -49,19 +54,20 @@ def upload_image():
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER,secure_filename(file.filename)))
         # get all predictions
         img_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename))
-        img = plt.imread(img_path)
+        img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (224,224))
-        img = np.expand_dims(img, axis=0)
+        img_array = img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
 
         cnn_predictions = dict()
         cnn_values = dict() # these are model values
         cnn_derma_data = [] # get derma data
         for key in cnn_models:
+            img_array_cnn = cnn_preprocess_input[key](img_array)
             model = cnn_models[key]
-            arr = model.predict(img)
-            print(key,arr)
-            index = np.argmax(arr, axis=1)[0]
-            print(index)
+            arr = model.predict(img_array_cnn)
+            index = np.argmax(arr[0])
             cnn_values[key] = round((arr[0][index] * 100),2)
             cnn_predictions[key] = CLASSES[index]
         cnn_predicted_derma = most_common(list(cnn_predictions.values()))

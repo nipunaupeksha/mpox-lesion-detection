@@ -20,17 +20,32 @@ def load_models(model_path):
 
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), model_path)
     files = os.listdir(path)
+    print(files)
 
     # add models to the list
-    for index, file in enumerate(files):
+    for file in files:
         if '.DS_Store' in file:
             continue
-        name = file.rsplit(".", 1)[0].lower().split("_")[-1]
+        name = file.rsplit('.',1)[0].lower().split('_')[-1]
         # Load tf and torch models
-        model = index
-        models[name] = model
+        if("cnn" in model_path):
+            model = tf.keras.models.load_model(os.path.join(os.path.dirname(__file__), model_path, file))
+            models[name] = model
     return models
 
+def load_preprocess_input_methods(label):
+    preprocess_input = dict()
+    if(label=='cnn'):
+        preprocess_input["mobilenetv2"] = tf.keras.applications.mobilenet_v2.preprocess_input
+        preprocess_input["inceptionresnetv2"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+        preprocess_input["inceptionv3"] = tf.keras.applications.inception_v3.preprocess_input
+        preprocess_input["resnetv2"] = tf.keras.applications.resnet_v2.preprocess_input
+        preprocess_input["vgg16"] = tf.keras.applications.vgg16.preprocess_input
+        preprocess_input["vgg19"] = tf.keras.applications.vgg19.preprocess_input
+        preprocess_input["xception"] = tf.keras.applications.xception.preprocess_input
+        return preprocess_input
+    else:
+        return preprocess_input
 
 def get_img_array(img_path, size):
     img = tf.keras.preprocessing.image.load_img(img_path, target_size=size)
@@ -82,13 +97,13 @@ def save_and_display_gradcam(img_path, heatmap, cam_path, alpha=0.4):
     jet_heatmap = jet_colors[heatmap]
 
     # Create an image with RGB colorized heatmap
-    jet_heatmap = tf.keras.preprocessing.image.array_to_img(jet_heatmap)
+    jet_heatmap = tf.keras.utils.array_to_img(jet_heatmap)
     jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
     jet_heatmap = tf.keras.preprocessing.image.img_to_array(jet_heatmap)
 
     # Superimpose the heatmap on original image
     superimposed_img = jet_heatmap * alpha + img
-    superimposed_img = tf.keras.preprocessing.array_to_img(superimposed_img)
+    superimposed_img = tf.keras.utils.array_to_img(superimposed_img)
 
     # Save the superimposed image
     superimposed_img.save(cam_path)
