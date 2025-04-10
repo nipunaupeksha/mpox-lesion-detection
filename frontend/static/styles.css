@@ -31,6 +31,7 @@
   --smaller-font-size: 0.75rem;
 
   /*========== Font weight ==========*/
+  --font-normal: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
 
@@ -313,10 +314,6 @@ the website, in dark theme
   margin-bottom: var(--mb-1);
 }
 
-.home__description {
-  margin-bottom: var(--mb-2-5);
-}
-
 .home__input-wrapper {
   background-color: var(--first-color-lighten);
   display: flex;
@@ -340,30 +337,80 @@ the website, in dark theme
   position: relative;
 }
 
-.second__text {
-  color: var(--first-color);
+.first__text {
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-normal);
+}
+
+/* .outer-headings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+} */
+
+.inner-headings {
+  border: 0px solid #ddd;
+  height: 30px;
+  line-height: 30px;
+  font-size: var(--normal-font-size);
   font-weight: var(--font-semi-bold);
+  overflow: hidden;
 }
 
-.second__text::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: var(--body-color);
-  border-left: 2px solid var(--first-color);
-  animation: animate 2s steps(12) infinite;
+.inner-headings span {
+  position: relative;
+  color: var(--first-color);
+  animation: animation 26s ease infinite;
 }
 
-@keyframes animate {
-  40%,
-  60% {
-    left: calc(100% + 4px);
-  }
+@keyframes animation {
+  0%,
   100% {
-    left: 0%;
+    top: 0;
+  }
+  7.5% {
+    top: -30px;
+  }
+
+  15% {
+    top: -60px;
+  }
+
+  22.5% {
+    top: -90px;
+  }
+  30% {
+    top: -120px;
+  }
+
+  37.5% {
+    top: -150px;
+  }
+  45% {
+    top: -180px;
+  }
+
+  52.5% {
+    top: -210px;
+  }
+  60% {
+    top: -240px;
+  }
+  67.5% {
+    top: -270px;
+  }
+  75% {
+    top: -300px;
+  }
+  82.5% {
+    top: -330px;
+  }
+  90% {
+    top: -360px;
+  }
+  97.5% {
+    top: -390px;
   }
 }
 
@@ -579,6 +626,10 @@ the website, in dark theme
 }
 
 .footer__information:hover .model_enumeration {
+  color: var(--first-color);
+}
+
+.footer__information:hover {
   color: var(--first-color);
 }
 

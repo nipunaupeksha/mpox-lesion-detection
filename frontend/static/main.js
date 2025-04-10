@@ -98,46 +98,37 @@ themeButton.addEventListener("click", () => {
 /*=============== TEXT ROTATION ===============*/
 const text = document.querySelector(".second__text");
 
+// Array of texts to rotate
+const texts = [
+  "MobileNetV2",
+  "InceptionResnetV2",
+  "VGG-16",
+  "VGG-19",
+  "Xception",
+  "Resnet50V2",
+  "InceptionV3",
+  "LSTM",
+  "GRU",
+  "GCN",
+  "DualGCN",
+  "GIN",
+  "GAT",
+];
+
+let index = 0;
+const timePerChar = 80; // ms per character
+const pauseAfterWord = 500; // ms pause after word
+
 function textLoad() {
-  setTimeout(() => {
-    text.textContent = "MobileNetV2";
-  }, 0);
-  setTimeout(() => {
-    text.textContent = "InceptionResnetV2";
-  }, 2000);
-  setTimeout(() => {
-    text.textContent = "VGG-16";
-  }, 4000);
-  setTimeout(() => {
-    text.textContent = "VGG-19";
-  }, 6000);
-  setTimeout(() => {
-    text.textContent = "Xception";
-  }, 8000);
-  setTimeout(() => {
-    text.textContent = "Resnet50V2";
-  }, 10000);
-  setTimeout(() => {
-    text.textContent = "InceptionV3";
-  }, 12000);
-  setTimeout(() => {
-    text.textContent = "LSTM";
-  }, 14000);
-  setTimeout(() => {
-    text.textContent = "GRU";
-  }, 16000);
-  setTimeout(() => {
-    text.textContent = "GCN";
-  }, 18000);
-  setTimeout(() => {
-    text.textContent = "DualGCN";
-  }, 20000);
-  setTimeout(() => {
-    text.textContent = "GIN";
-  }, 22000);
-  setTimeout(() => {
-    text.textContent = "GAT";
-  }, 24000);
+  const currentText = texts[index];
+  text.textContent = currentText;
+
+  // Calculate the time based on characters
+  const delay = currentText.length * timePerChar + pauseAfterWord;
+
+  index = (index + 1) % texts.length;
+
+  setTimeout(textLoad, delay);
 }
 
 textLoad();
