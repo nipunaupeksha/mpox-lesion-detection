@@ -8,8 +8,8 @@
 
   /*========== Colors ==========*/
   /*Color mode HSL(hue, saturation, lightness)*/
-  --hue: 228;
-  --first-color: hsl(var(--hue), 66%, 53%);
+  --hue: 180;
+  --first-color: hsl(var(--hue), 60%, 53%);
   --first-color-alt: hsl(var(--hue), 66%, 47%);
   --first-color-light: hsl(var(--hue), 62%, 59%);
   --first-color-lighten: hsl(var(--hue), 100%, 97%);
@@ -268,6 +268,7 @@ the website, in dark theme
 /* Show menu */
 .show-menu {
   right: 0;
+  color: var(--first-color);
 }
 
 /* Change background header */
@@ -318,16 +319,18 @@ the website, in dark theme
 
 .home__input-wrapper {
   background-color: var(--first-color-lighten);
-  padding: 0.75rem;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
   justify-content: space-between;
   border-radius: 0.5rem;
 }
 
 .home__input {
   width: 70%;
-  padding: 0.5rem;
   background: none;
+  padding-left: 1rem;
   color: var(--text-color);
   border: none;
   outline: none;
@@ -520,7 +523,7 @@ the website, in dark theme
 
 .footer__logo-icon {
   font-size: 1.15rem;
-  color: var(--first-color);
+  /* color: var(--first-color); */
 }
 
 .footer__logo:hover {
@@ -562,6 +565,21 @@ the website, in dark theme
 
 .footer__social-link:hover {
   transform: translateY(-0.25rem);
+  color: var(--first-color);
+}
+
+.right_arrow_wiki {
+  transition: 0.3s;
+  color: var(--text-color);
+}
+
+.footer__information:hover .right_arrow_wiki {
+  transform: translateX(0.25rem);
+  color: var(--first-color);
+}
+
+.footer__information:hover .model_enumeration {
+  color: var(--first-color);
 }
 
 .footer__copy {

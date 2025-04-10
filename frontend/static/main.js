@@ -43,7 +43,7 @@ function scrollActive() {
 
   sections.forEach((current) => {
     const sectionHeight = current.offsetHeight,
-      sectionTop = current.offsetTop - 58,
+      sectionTop = current.offsetTop - 50,
       sectionId = current.getAttribute("id");
 
     if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
@@ -117,6 +117,27 @@ function textLoad() {
   setTimeout(() => {
     text.textContent = "Resnet50V2";
   }, 10000);
+  setTimeout(() => {
+    text.textContent = "InceptionV3";
+  }, 12000);
+  setTimeout(() => {
+    text.textContent = "LSTM";
+  }, 14000);
+  setTimeout(() => {
+    text.textContent = "GRU";
+  }, 16000);
+  setTimeout(() => {
+    text.textContent = "GCN";
+  }, 18000);
+  setTimeout(() => {
+    text.textContent = "DualGCN";
+  }, 20000);
+  setTimeout(() => {
+    text.textContent = "GIN";
+  }, 22000);
+  setTimeout(() => {
+    text.textContent = "GAT";
+  }, 24000);
 }
 
 textLoad();
