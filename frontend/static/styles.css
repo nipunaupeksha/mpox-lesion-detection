@@ -615,6 +615,10 @@ the website, in dark theme
   color: var(--first-color);
 }
 
+.social_link_i {
+  font-size: 1.5rem;
+}
+
 .right_arrow_wiki {
   transition: 0.3s;
   color: var(--text-color);
@@ -800,7 +804,7 @@ the website, in dark theme
     font-size: var(--h3-font-size);
   }
   .footer__container {
-    grid-template-columns: 1fr 0.5fr 0.5fr;
+    grid-template-columns: 1fr 1fr 0.5fr;
   }
   .footer__copy {
     margin: 7rem 0 2rem;
