@@ -30,33 +30,44 @@ navLink.forEach((n) => n.addEventListener("click", linkAction));
 /*=============== CHANGE BACKGROUND HEADER ===============*/
 function scrollHeader() {
   const header = document.getElementById("header");
-  if (this.scrollY >= 80) header.classList.add("scroll-header");
+  if (this.scrollY >= 50) header.classList.add("scroll-header");
   else header.classList.remove("scroll-header");
 }
 window.addEventListener("scroll", scrollHeader);
 
 /*=============== SCROLL SECTIONS ACTIVE LINK ===============*/
-const sections = document.querySelectorAll("section[id]");
+const sections = document.querySelectorAll("section[id], footer[id]");
 
 function scrollActive() {
   const scrollY = window.pageYOffset;
+  const windowHeight = window.innerHeight;
+  const bodyHeight = document.body.offsetHeight;
 
+  // First, remove all active-link classes
+  document
+    .querySelectorAll(".nav__menu a")
+    .forEach((link) => link.classList.remove("active-link"));
+
+  // Special case: if we're at the bottom of the page, activate footer and return
+  if (windowHeight + scrollY >= bodyHeight - 2) {
+    const footerLink = document.querySelector(".nav__menu a[href*='footer']");
+    if (footerLink) footerLink.classList.add("active-link");
+    return;
+  }
+
+  // Otherwise, activate section in view
   sections.forEach((current) => {
-    const sectionHeight = current.offsetHeight,
-      sectionTop = current.offsetTop - 50,
-      sectionId = current.getAttribute("id");
+    const sectionHeight = current.offsetHeight;
+    const sectionTop = current.offsetTop - 58;
+    const sectionId = current.getAttribute("id");
 
     if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-      document
-        .querySelector(".nav__menu a[href*=" + sectionId + "]")
-        .classList.add("active-link");
-    } else {
-      document
-        .querySelector(".nav__menu a[href*=" + sectionId + "]")
-        .classList.remove("active-link");
+      const link = document.querySelector(`.nav__menu a[href*="${sectionId}"]`);
+      if (link) link.classList.add("active-link");
     }
   });
 }
+
 window.addEventListener("scroll", scrollActive);
 
 /*=============== DARK LIGHT THEME ===============*/
@@ -94,45 +105,6 @@ themeButton.addEventListener("click", () => {
   localStorage.setItem("selected-theme", getCurrentTheme());
   localStorage.setItem("selected-icon", getCurrentIcon());
 });
-
-/*=============== TEXT ROTATION ===============*/
-const text = document.querySelector(".second__text");
-
-// Array of texts to rotate
-const texts = [
-  "MobileNetV2",
-  "InceptionResnetV2",
-  "VGG-16",
-  "VGG-19",
-  "Xception",
-  "Resnet50V2",
-  "InceptionV3",
-  "LSTM",
-  "GRU",
-  "GCN",
-  "DualGCN",
-  "GIN",
-  "GAT",
-];
-
-let index = 0;
-const timePerChar = 80; // ms per character
-const pauseAfterWord = 500; // ms pause after word
-
-function textLoad() {
-  const currentText = texts[index];
-  text.textContent = currentText;
-
-  // Calculate the time based on characters
-  const delay = currentText.length * timePerChar + pauseAfterWord;
-
-  index = (index + 1) % texts.length;
-
-  setTimeout(textLoad, delay);
-}
-
-textLoad();
-setInterval(textLoad, 12000);
 
 /*=============== FILE TEXT ===============*/
 $("#file").on("change", function () {

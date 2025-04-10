@@ -458,7 +458,7 @@ the website, in dark theme
 }
 
 .net__container,
-.fish__container {
+.derma__container {
   gap: 2rem;
   padding-top: 1rem;
 }
@@ -490,17 +490,17 @@ the website, in dark theme
 }
 
 .net__card:hover .net__card-net,
-.fish__card:hover .fish__card-name:hover {
+.derma__card:hover .derma__card-name:hover {
   transform: translateY(-0.25rem);
 }
 
-.fish__card {
+.derma__card {
   border: 1px dashed var(--first-color);
   padding: 1rem;
   border-radius: 1rem;
 }
 
-.fish__card-name {
+.derma__card-name {
   display: inline-block;
   color: var(--text-color);
   padding: 0.5rem 0.75rem;
@@ -510,7 +510,7 @@ the website, in dark theme
   transition: 0.3s;
 }
 
-.fish__card-img {
+.derma__card-img {
   max-width: 100%;
   height: auto;
 }
@@ -711,7 +711,7 @@ the website, in dark theme
     width: 400px;
   }
   .net__container,
-  .fish__container {
+  .derma__container {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -794,7 +794,7 @@ the website, in dark theme
     padding: 3.5rem 2.5rem;
   }
   .net__container,
-  .fish__container {
+  .derma__container {
     grid-template-columns: repeat(3, 1fr);
   }
   .net__card-prediction {
