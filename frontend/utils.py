@@ -2,7 +2,10 @@ import os
 import tensorflow as tf
 from werkzeug.utils import secure_filename
 import numpy as np
+import cv2
+from tensorflow.keras.preprocessing.image import img_to_array
 import matplotlib.cm as cm
+from .constants import CLASSES
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
@@ -14,25 +17,36 @@ CNN_MODELS = MODELS_PATH + "/cnn"
 RNN_MODELS = MODELS_PATH + "/rnn"
 GNN_MODELS = MODELS_PATH + "/gnn"
 
-# check whether the uploaded image has the correct format
+# Check whether the uploaded image has the correct format
 def allowed_file(filename):
+    # Check if the file has an allowed extension
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# load CNN models
+# Save the uploaded file
+def save_original_file(file):
+    # Save the uploaded file in the UPLOAD_FOLDER and return the file path
+    file_path = file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename)))
+    return file_path
+
+# Get image path
+def get_image_path(file):
+    # Get the image path
+    img_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename))
+    return img_path
+
+# Load models
 def load_models(model_path):
     models = dict()
-
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), model_path)
     files = os.listdir(path)
-    print(files)
 
     # add models to the list
     for file in files:
         if '.DS_Store' in file:
             continue
         name = file.rsplit('.',1)[0].lower().split('_')[-1]
-        # Load tf and torch models
-        if("cnn" in model_path):
+        # Load models
+        if("cnn" in model_path or "rnn" in model_path or "gnn" in model_path):
             model = tf.keras.models.load_model(os.path.join(os.path.dirname(__file__), model_path, file))
             models[name] = model
     return models
@@ -50,6 +64,38 @@ def load_preprocess_input_methods(label):
         return preprocess_input
     else:
         return preprocess_input
+
+# Process CNN models
+def process_cnn_models(cnn_models, img_path, file):
+    # Load preprocess input
+    cnn_preprocess_input=load_preprocess_input_methods('cnn')
+
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (224,224))
+    img_array = img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+
+    cnn_predictions = dict()
+    cnn_values = dict() # these are model values
+    for key in cnn_models:
+        img_array_cnn = cnn_preprocess_input[key](img_array)
+        model = cnn_models[key]
+        arr = model.predict(img_array_cnn)
+        index = np.argmax(arr[0])
+        cnn_values[key] = round((arr[0][index] * 100),2)
+        cnn_predictions[key] = CLASSES[index]
+    cnn_ensembled_derma = ensembling_results(list(cnn_predictions.values()))
+    return cnn_predictions, cnn_ensembled_derma, cnn_values
+
+def get_ensemble_derma_information(cnn_ensembled_derma, df_arr):
+    index = 0
+    for i in range(len(CLASSES)):
+        if cnn_ensembled_derma in CLASSES[i]:
+            index = i
+            break
+    cnn_derma_data = df_arr[index]
+    return cnn_derma_data
 
 def get_img_array(img_path, size):
     img = tf.keras.preprocessing.image.load_img(img_path, target_size=size)
@@ -114,11 +160,7 @@ def save_and_display_gradcam(img_path, heatmap, cam_path, alpha=0.4):
 
     return cam_path
 
+# Function to ensemble the results from different models
 def ensembling_results(prediction_list):
     # Return the ensemble result with neural network type
     return max(set(prediction_list), key=prediction_list.count)
-
-def save_original_file(file):
-    # Save the uploaded file in the UPLOAD_FOLDER and return the file path
-    file_path = file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename)))
-    return file_path

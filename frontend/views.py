@@ -1,21 +1,12 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for 
 from werkzeug.utils import secure_filename
-from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, ensembling_results,load_preprocess_input_methods, save_original_file, CNN_MODELS, RNN_MODELS, GNN_MODELS
+from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, process_cnn_models, save_original_file, get_image_path, get_ensemble_derma_information
 import os
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import img_to_array
-import numpy as np
-import cv2
 import pandas as pd
+from .constants import GRADCAM_FOLDER, IMG_SIZE, LAST_CONV_LAYER_NAME, DERMA_DATA_PATH, CNN_MODELS, RNN_MODELS, GNN_MODELS
 
-UPLOAD_FOLDER="./static/uploads"
-GRADCAM_FOLDER = './static/uploads/gradcam'
-
-LAST_CONV_LAYER_NAME="Conv_1"
-
-IMG_SIZE=(224,224)
-CLASSES = ['Chickenpox', 'Cowpox', 'HFMD', 'Healthy', 'Measles', 'Monkeypox']
-
+# Create a blueprint for the views
 views = Blueprint('views', __name__)
 
 # Load models
@@ -23,16 +14,13 @@ cnn_models = load_models(CNN_MODELS)
 rnn_models = load_models(RNN_MODELS)
 gnn_models = load_models(GNN_MODELS)
 
-# Load preprocess input
-cnn_preprocess_input = load_preprocess_input_methods('cnn')
-
 # Print models
 print("CNN Models: ", cnn_models)
 print("RNN Models: ", rnn_models)
 print("GNN Models: ", gnn_models)
 
 # Load derma data
-df = pd.read_csv(os.path.join(os.path.abspath(os.path.dirname(__file__)), './static/derma_dataset.csv'))
+df = pd.read_csv(os.path.join(os.path.abspath(os.path.dirname(__file__)), DERMA_DATA_PATH))
 df_arr = df.values.tolist()
 
 
@@ -52,36 +40,16 @@ def upload_image():
         flash('No image selected for uploading')
         return redirect(request.url)
     if file and allowed_file(file.filename):
-        # upload
+        # Upload the image
         filename = secure_filename(file.filename)
-
-        # save the uploaded file
+        # Save the uploaded file
         save_original_file(file)
-        # get CNN predictions
-        img_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename))
-        img = cv2.imread(img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (224,224))
-        img_array = img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-
-        cnn_predictions = dict()
-        cnn_values = dict() # these are model values
-        cnn_derma_data = [] # get derma data
-        for key in cnn_models:
-            img_array_cnn = cnn_preprocess_input[key](img_array)
-            model = cnn_models[key]
-            arr = model.predict(img_array_cnn)
-            index = np.argmax(arr[0])
-            cnn_values[key] = round((arr[0][index] * 100),2)
-            cnn_predictions[key] = CLASSES[index]
-        cnn_predicted_derma = ensembling_results(list(cnn_predictions.values()))
-        index = 0
-        for i in range(len(CLASSES)):
-            if cnn_predicted_derma in CLASSES[i]:
-                index = i
-                break
-        cnn_derma_data = df_arr[index]
+        # Get image path
+        img_path = get_image_path(file)
+        # Get CNN predictions
+        cnn_predictions, cnn_ensembled_derma, cnn_values = process_cnn_models(cnn_models, img_path, file)
+        # Get ensemble derma information for CNN
+        cnn_derma_data = get_ensemble_derma_information(cnn_ensembled_derma, df_arr)
 
         # gradcam
         model = cnn_models["mobilenetv2"]
@@ -91,7 +59,7 @@ def upload_image():
         heatmap = make_gradcam_heatmap(img_array, model, LAST_CONV_LAYER_NAME)
         cam_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),GRADCAM_FOLDER, secure_filename(file.filename))
         cam_path = save_and_display_gradcam(img_path, heatmap, cam_path)
-        return render_template("index.html", filename=filename, predictions=cnn_predictions, values=cnn_values, predicted_derma=cnn_predicted_derma, derma_data=cnn_derma_data)
+        return render_template("index.html", filename=filename, predictions=cnn_predictions, values=cnn_values, predicted_derma=cnn_ensembled_derma, derma_data=cnn_derma_data)
     else:
         flash("Allowed image types are .png, .jpg and .jpeg")
         return redirect(request.url)
