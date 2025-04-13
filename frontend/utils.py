@@ -66,18 +66,22 @@ def load_preprocess_input_methods(label):
         return preprocess_input
 
 # Process CNN models
-def process_cnn_models(cnn_models, img_path, file):
+def process_cnn_models(cnn_models, img_path):
     # Load preprocess input
     cnn_preprocess_input=load_preprocess_input_methods('cnn')
 
+    # Read and preprocess the image
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (224,224))
     img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
 
+    # Save the predictions in a dictionary
     cnn_predictions = dict()
-    cnn_values = dict() # these are model values
+    cnn_values = dict()
+
+    # Iterate through the models and make predictions
     for key in cnn_models:
         img_array_cnn = cnn_preprocess_input[key](img_array)
         model = cnn_models[key]
@@ -85,9 +89,22 @@ def process_cnn_models(cnn_models, img_path, file):
         index = np.argmax(arr[0])
         cnn_values[key] = round((arr[0][index] * 100),2)
         cnn_predictions[key] = CLASSES[index]
+
+    # Ensemble the predictions
     cnn_ensembled_derma = ensembling_results(list(cnn_predictions.values()))
+
+    # Return the predictions and ensemble result
     return cnn_predictions, cnn_ensembled_derma, cnn_values
 
+# Process RNN models
+def process_rnn_models(rnn_models, img_path):
+    return None
+
+# Process GNN models
+def process_gnn_models(gnn_models, img_path):
+    return None
+
+# Get ensemble derma information
 def get_ensemble_derma_information(cnn_ensembled_derma, df_arr):
     index = 0
     for i in range(len(CLASSES)):
@@ -97,6 +114,7 @@ def get_ensemble_derma_information(cnn_ensembled_derma, df_arr):
     cnn_derma_data = df_arr[index]
     return cnn_derma_data
 
+# Function to get the image array
 def get_img_array(img_path, size):
     img = tf.keras.preprocessing.image.load_img(img_path, target_size=size)
     array = tf.keras.preprocessing.image.img_to_array(img)
@@ -104,6 +122,7 @@ def get_img_array(img_path, size):
     array = np.expand_dims(array, axis=0)
     return array
 
+# Function to create Grad-CAM heatmap
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
     # First, we create a model that maps the input image to the activations of the last conv layer as well as the output predictions
     grad_model = tf.keras.models.Model([model.inputs], [model.get_layer(last_conv_layer_name).output, model.output])
@@ -131,6 +150,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
     heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
     return heatmap.numpy()
 
+# Function to save and display the Grad-CAM heatmap
 def save_and_display_gradcam(img_path, heatmap, cam_path, alpha=0.4):
     # Load the original image
     img = tf.keras.preprocessing.image.load_img(img_path)

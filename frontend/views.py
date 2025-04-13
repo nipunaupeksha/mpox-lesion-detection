@@ -47,7 +47,7 @@ def upload_image():
         # Get image path
         img_path = get_image_path(file)
         # Get CNN predictions
-        cnn_predictions, cnn_ensembled_derma, cnn_values = process_cnn_models(cnn_models, img_path, file)
+        cnn_predictions, cnn_ensembled_derma, cnn_values = process_cnn_models(cnn_models, img_path)
         # Get ensemble derma information for CNN
         cnn_derma_data = get_ensemble_derma_information(cnn_ensembled_derma, df_arr)
 
