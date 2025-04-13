@@ -18,18 +18,20 @@ CLASSES = ['Chickenpox', 'Cowpox', 'HFMD', 'Healthy', 'Measles', 'Monkeypox']
 
 views = Blueprint('views', __name__)
 
-# load models
+# Load models
 cnn_models = load_models(CNN_MODELS)
 rnn_models = load_models(RNN_MODELS)
 gnn_models = load_models(GNN_MODELS)
 
-# load preprocess input
+# Load preprocess input
 cnn_preprocess_input = load_preprocess_input_methods('cnn')
 
-# print models
+# Print models
 print("CNN Models: ", cnn_models)
+print("RNN Models: ", rnn_models)
+print("GNN Models: ", gnn_models)
 
-# load derma data
+# Load derma data
 df = pd.read_csv(os.path.join(os.path.abspath(os.path.dirname(__file__)), './static/derma_dataset.csv'))
 df_arr = df.values.tolist()
 
