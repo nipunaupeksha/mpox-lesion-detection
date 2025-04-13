@@ -1,11 +1,15 @@
 import os
 import tensorflow as tf
+from werkzeug.utils import secure_filename
 import numpy as np
 import matplotlib.cm as cm
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-MODELS_PATH = "./static/models"
 
+# Directory paths
+MODELS_PATH = "./static/models"
+UPLOAD_FOLDER="./static/uploads"
+GRADCAM_FOLDER = './static/uploads/gradcam'
 CNN_MODELS = MODELS_PATH + "/cnn"
 RNN_MODELS = MODELS_PATH + "/rnn"
 GNN_MODELS = MODELS_PATH + "/gnn"
@@ -110,5 +114,11 @@ def save_and_display_gradcam(img_path, heatmap, cam_path, alpha=0.4):
 
     return cam_path
 
-def most_common(lst):
-    return max(set(lst), key=lst.count)
+def ensembling_results(prediction_list):
+    # Return the ensemble result with neural network type
+    return max(set(prediction_list), key=prediction_list.count)
+
+def save_original_file(file):
+    # Save the uploaded file in the UPLOAD_FOLDER and return the file path
+    file_path = file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename)))
+    return file_path

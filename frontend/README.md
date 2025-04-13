@@ -1,6 +1,6 @@
 # DermaFacts
 
-# About
+## About
 
 This project contains the frontend application of the MSc final project - Implementing GNNs for Mpox Identification.
 

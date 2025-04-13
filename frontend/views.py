@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for 
 from werkzeug.utils import secure_filename
-from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, most_common,load_preprocess_input_methods, CNN_MODELS, RNN_MODELS, GNN_MODELS
+from .utils import allowed_file, load_models, get_img_array, make_gradcam_heatmap, save_and_display_gradcam, ensembling_results,load_preprocess_input_methods, save_original_file, CNN_MODELS, RNN_MODELS, GNN_MODELS
 import os
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -37,6 +37,7 @@ df_arr = df.values.tolist()
 # main route to show the upload image and get image classification
 @views.route('/')
 def home():
+    # Render the home page
     return render_template("index.html")
 
 @views.route('/', methods=['POST'])
@@ -51,8 +52,10 @@ def upload_image():
     if file and allowed_file(file.filename):
         # upload
         filename = secure_filename(file.filename)
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER,secure_filename(file.filename)))
-        # get all predictions
+
+        # save the uploaded file
+        save_original_file(file)
+        # get CNN predictions
         img_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),UPLOAD_FOLDER, secure_filename(file.filename))
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -70,7 +73,7 @@ def upload_image():
             index = np.argmax(arr[0])
             cnn_values[key] = round((arr[0][index] * 100),2)
             cnn_predictions[key] = CLASSES[index]
-        cnn_predicted_derma = most_common(list(cnn_predictions.values()))
+        cnn_predicted_derma = ensembling_results(list(cnn_predictions.values()))
         index = 0
         for i in range(len(CLASSES)):
             if cnn_predicted_derma in CLASSES[i]:
