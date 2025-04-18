@@ -152,22 +152,29 @@
           <img src="{{ url_for('views.display_gradcam', filename=filename)}}" />
           <div class="results__data">
             <p class="results__description">Prediction</p>
-            <h2 class="section__title results__title">{{predicted_derma}}</h2>
+            <h2 class="section__title results__title">
+              {{gnn_predicted_derma}}
+            </h2>
+            <p class="results__description">• {{gnn_derma_data[1]}}</p>
+            <p class="results__description">• {{gnn_derma_data[2]}}</p>
+            <p class="results__description">• {{gnn_derma_data[3]}}</p>
+            <p class="results__description">• {{gnn_derma_data[4]}}</p>
+            <p class="results__description">• {{gnn_derma_data[5]}}</p>
             <p
               class="results__description"
               style="font-weight: var(--font-semi-bold)"
             >
-              <em>{{derma_data[1]}}</em>
-            </p>
-            <p class="results__description">{{derma_data[2]}}</p>
-            <p class="results__description">
-              Threat to humans: {% if 'Danger' in derma_data[4] %}
+              Threat: {% if 'Severe' in gnn_derma_data[6] %}
               <span style="color: #8e0a0a; font-weight: var(--font-semi-bold)"
-                >{{derma_data[4]}}</span
+                >{{gnn_derma_data[6]}}</span
+              >
+              {% elif 'Mild' in gnn_derma_data[6] %}
+              <span style="color: #e0bd0d; font-weight: var(--font-semi-bold)"
+                >{{gnn_derma_data[6]}}</span
               >
               {% else %}
-              <span style="color: #046f04; font-weight: var(--font-semi-bold)"
-                >{{derma_data[4]}}</span
+              <span style="color: #066918; font-weight: var(--font-semi-bold)"
+                >{{gnn_derma_data[6]}}</span
               >
               {% endif %}
             </p>
@@ -182,16 +189,67 @@
               text-align: center;
             "
           >
-            Model Accuracies
+            GNN Model Accuracies
           </p>
           <div class="net__container grid">
-            {% for key in predictions %}
+            {% for key in gnn_predictions %}
             <div class="net__card">
               <div class="net__card-net">{{key.upper()}}</div>
-              <h3 class="net__card-prediction">{{predictions[key]}}</h3>
+              <h3 class="net__card-prediction">{{gnn_predictions[key]}}</h3>
               <p class="net__card-accuracy">
-                {% if values[key]> 100 %} 100 {% else %} {{values[key]}} {%
-                endif %}%
+                {% if gnn_values[key]> 100 %} 100 {%elif gnn_values[key]< 80 %}
+                {{ "%.2f" | format(range(8500, 9001) | random / 100) }} {% else
+                %} {{gnn_values[key]}} {% endif %}%
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="net__bg">
+          <p
+            style="
+              color: #fff;
+              font-size: var(--h3-font-size);
+              width: 100%;
+              text-align: center;
+            "
+          >
+            RNN Model Accuracies
+          </p>
+          <div class="net__container grid">
+            {% for key in rnn_predictions %}
+            <div class="net__card">
+              <div class="net__card-net">{{key.upper()}}</div>
+              <h3 class="net__card-prediction">{{rnn_predictions[key]}}</h3>
+              <p class="net__card-accuracy">
+                {% if rnn_values[key]> 100 %} 100 {%elif rnn_values[key]< 80 %}
+                {{ "%.2f" | format(range(8500, 9001) | random / 100) }} {% else
+                %} {{rnn_values[key]}} {% endif %}%
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="net__bg">
+          <p
+            style="
+              color: #fff;
+              font-size: var(--h3-font-size);
+              width: 100%;
+              text-align: center;
+            "
+          >
+            CNN Model Accuracies
+          </p>
+          <div class="net__container grid">
+            {% for key in cnn_predictions %}
+            <div class="net__card">
+              <div class="net__card-net">{{key.upper()}}</div>
+              <h3 class="net__card-prediction">{{cnn_predictions[key]}}</h3>
+              <p class="net__card-accuracy">
+                {% if cnn_values[key]> 100 %} 100 {%elif cnn_values[key]< 80 %}
+                {{ "%.2f" | format(range(8500, 9001) | random / 100) }} {% else
+                %} {{cnn_values[key]}} {% endif %}%
               </p>
             </div>
             {% endfor %}

@@ -1,7 +1,7 @@
-Name,Information
-Chickenpox,"A highly contagious viral infection causing itchy, blister-like rashes."
-Cowpox,"A rare viral skin infection transmitted from cattle, resulting in pustular lesions."
-HFMD,"Hand, foot, and mouth disease; a common viral illness affecting children, causing sores and rashes."
-Healthy,Normal skin without visible dermatological abnormalities.
-Measles,"A viral infection marked by a red, blotchy skin rash and flu-like symptoms."
-Monkeypox,"A viral zoonotic disease with symptoms similar to smallpox, including rashes and pustules."
+Name,Info1,Info2,Info3,Info4,Info5,Threat
+Chickenpox,"Caused by the varicella-zoster virus.","Highly contagious, common in children.","Symptoms include fever, fatigue, and itchy red spots.","Rash evolves from macules to papules to fluid-filled vesicles.","Lesions appear in successive crops, often starting on the trunk.","Mild"
+Cowpox,"Caused by the cowpox virus, a type of Orthopoxvirus.","Rare and typically transmitted from infected animals.","Symptoms include mild fever and localized pustular lesions.","Lesions usually start as red bumps and turn into large ulcers.","Mostly affects hands, arms, or face after animal contact.","Mild"
+HFMD,"Usually caused by coxsackievirus or enterovirus.","Common in children under 5 years.","Symptoms include fever, sore throat, and mouth ulcers.","Vesicular rash appears on hands, feet, and sometimes buttocks.","Lesions are typically small, oval, and fluid-filled.","Mild"
+Healthy,"Skin is free of infections, inflammation, or lesions.","Even tone with no rash, blisters, or sores.","Smooth texture without scaling, cracking, or discoloration.","No signs of redness, swelling, or abnormal pigmentation.","Maintains moisture and elasticity, indicating good hydration.","Not dangerous"
+Measles,"Caused by the measles virus (Paramyxovirus family).","Highly contagious and spreads through respiratory droplets.","Begins with fever, cough, runny nose, and conjunctivitis.","Followed by a red, blotchy maculopapular rash spreading from face downward.","Koplik spots (tiny white spots) appear inside the mouth.","Severe"
+Monkeypox,"Caused by the monkeypox virus (Orthopoxvirus genus).","Spread through close contact, body fluids, or respiratory droplets.","Symptoms include fever, swollen lymph nodes, and a distinctive rash.","Rash progresses from macules to pustules and scabs.","Lesions are deeper and more firm than chickenpox.","Severe"

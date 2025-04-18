@@ -51,24 +51,25 @@ def load_models(model_path):
             models[name] = model
     return models
 
-def load_preprocess_input_methods(label):
+def load_preprocess_input_methods():
     preprocess_input = dict()
-    if(label=='cnn'):
-        preprocess_input["mobilenetv2"] = tf.keras.applications.mobilenet_v2.preprocess_input
-        preprocess_input["inceptionresnetv2"] = tf.keras.applications.inception_resnet_v2.preprocess_input
-        preprocess_input["inceptionv3"] = tf.keras.applications.inception_v3.preprocess_input
-        preprocess_input["resnetv2"] = tf.keras.applications.resnet_v2.preprocess_input
-        preprocess_input["vgg16"] = tf.keras.applications.vgg16.preprocess_input
-        preprocess_input["vgg19"] = tf.keras.applications.vgg19.preprocess_input
-        preprocess_input["xception"] = tf.keras.applications.xception.preprocess_input
-        return preprocess_input
-    else:
-        return preprocess_input
+    preprocess_input["mobilenetv2"] = tf.keras.applications.mobilenet_v2.preprocess_input
+    preprocess_input["inceptionresnetv2"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+    preprocess_input["inceptionv3"] = tf.keras.applications.inception_v3.preprocess_input
+    preprocess_input["resnetv2"] = tf.keras.applications.resnet_v2.preprocess_input
+    preprocess_input["vgg16"] = tf.keras.applications.vgg16.preprocess_input
+    preprocess_input["vgg19"] = tf.keras.applications.vgg19.preprocess_input
+    preprocess_input["xception"] = tf.keras.applications.xception.preprocess_input
+    preprocess_input["gcn"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+    preprocess_input["dualgcn"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+    preprocess_input["gin"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+    preprocess_input["gat"] = tf.keras.applications.inception_resnet_v2.preprocess_input
+    return preprocess_input
 
 # Process CNN models
 def process_cnn_models(cnn_models, img_path):
     # Load preprocess input
-    cnn_preprocess_input=load_preprocess_input_methods('cnn')
+    preprocess_input=load_preprocess_input_methods()
 
     # Read and preprocess the image
     img = cv2.imread(img_path)
@@ -83,7 +84,7 @@ def process_cnn_models(cnn_models, img_path):
 
     # Iterate through the models and make predictions
     for key in cnn_models:
-        img_array_cnn = cnn_preprocess_input[key](img_array)
+        img_array_cnn = preprocess_input[key](img_array)
         model = cnn_models[key]
         arr = model.predict(img_array_cnn)
         index = np.argmax(arr[0])
@@ -98,11 +99,66 @@ def process_cnn_models(cnn_models, img_path):
 
 # Process RNN models
 def process_rnn_models(rnn_models, img_path):
-    return None
+    # Read and preprocess the image
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (224, 224))
+
+    img = img / 255.0
+    reshaped_img = img.reshape((224, 224 * 3))
+    img_array = np.expand_dims(reshaped_img, axis=0)
+
+    # img_array = img_to_array(img)
+    # img_array = np.expand_dims(img_array, axis=0)
+
+    # Save the predictions in a dictionary
+    rnn_predictions = dict()
+    rnn_values = dict()
+
+    # Iterate through the models and make predictions
+    for key in rnn_models:
+        model = rnn_models[key]
+        arr = model.predict(img_array)
+        index = np.argmax(arr[0])
+        rnn_values[key] = round((arr[0][index] * 100), 2)
+        rnn_predictions[key] = CLASSES[index]
+
+    # Ensemble the predictions
+    rnn_ensembled_derma = ensembling_results(list(rnn_predictions.values()))
+
+    # Return the predictions and ensemble result
+    return rnn_predictions, rnn_ensembled_derma, rnn_values
 
 # Process GNN models
 def process_gnn_models(gnn_models, img_path):
-    return None
+    # Load preprocess input
+    preprocess_input=load_preprocess_input_methods()
+
+    # Read and preprocess the image
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (224,224))
+    img_array = img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+
+    # Save the predictions in a dictionary
+    gnn_predictions = dict()
+    gnn_values = dict()
+
+    # Iterate through the models and make predictions
+    for key in gnn_models:
+        img_array_gnn = preprocess_input[key](img_array)
+        model = gnn_models[key]
+        arr = model.predict(img_array_gnn)
+        index = np.argmax(arr[0])
+        gnn_values[key] = round((arr[0][index] * 100),2)
+        gnn_predictions[key] = CLASSES[index]
+
+    # Ensemble the predictions
+    gnn_ensembled_derma = ensembling_results(list(gnn_predictions.values()))
+
+    # Return the predictions and ensemble result
+    return gnn_predictions, gnn_ensembled_derma, gnn_values
 
 # Get ensemble derma information
 def get_ensemble_derma_information(cnn_ensembled_derma, df_arr):
