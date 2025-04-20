@@ -11,11 +11,3 @@ To execute the project, simply, use the following command on the frontend root d
 ```python
 flask --app . run
 ```
-
-## Todo
-
-- Add RNN models
-- Add GNN models
-- Determine Accuracies
-- Add more details about the dermatological condition
-- Update README.md for more clarity
