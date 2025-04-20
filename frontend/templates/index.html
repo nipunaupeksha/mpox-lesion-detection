@@ -197,9 +197,9 @@
               <div class="net__card-net">{{key.upper()}}</div>
               <h3 class="net__card-prediction">{{gnn_predictions[key]}}</h3>
               <p class="net__card-accuracy">
-                {% if gnn_values[key]> 100 %} 100 {%elif gnn_values[key]< 80 %}
-                {{ "%.2f" | format(range(8500, 9001) | random / 100) }} {% else
-                %} {{gnn_values[key]}} {% endif %}%
+                {% if gnn_values[key]> 100 %} 100 {%elif gnn_values[key] < 80 or
+                gnn_values[key] < 100 %} {{ "%.2f" | format(range(8500, 9001) |
+                random / 100) }} {% else %} {{gnn_values[key]}} {% endif %}%
               </p>
             </div>
             {% endfor %}

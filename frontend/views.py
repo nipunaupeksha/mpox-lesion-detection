@@ -15,9 +15,9 @@ rnn_models = load_models(RNN_MODELS)
 gnn_models = load_models(GNN_MODELS)
 
 # Print models
-# print("CNN Models: ", cnn_models)
-# print("RNN Models: ", rnn_models)
-# print("GNN Models: ", gnn_models)
+print("CNN Models: ", cnn_models)
+print("RNN Models: ", rnn_models)
+print("GNN Models: ", gnn_models)
 
 # Load derma data
 df = pd.read_csv(os.path.join(os.path.abspath(os.path.dirname(__file__)), DERMA_DATA_PATH))
